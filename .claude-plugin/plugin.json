@@ -1,7 +1,7 @@
 {
   "$schema": "https://code.claude.com/schemas/plugin.json",
   "name": "flutter-golden-cycle",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Flutter dev cycle with golden-test TDD, per-worktree deterministic ports, component-reuse discipline, and Figma-driven visual review.",
   "author": {
     "name": "happinessee",

@@ -3,14 +3,12 @@
 // Linux / Windows).
 //
 // Place at <uiPackage>/test/flutter_test_config.dart — flutter_test picks it
-// up automatically; no import needed.
+// up automatically; no import needed from test files.
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:path/path.dart' as p;
 
 /// Pixel diff ratio (0.0 = strict, 0.02 = 2% — absorbs typical Skia AA drift).
 /// Raising this hides real regressions; lowering it produces flaky cross-OS
@@ -18,17 +16,18 @@ import 'package:path/path.dart' as p;
 const double _kMaxGoldenDiffRatio = {{goldenTolerance}};
 
 Future<void> testExecutable(FutureOr<void> Function() testMain) async {
+  // Inherit whatever basedir Flutter set up for this test run, so relative
+  // `matchesGoldenFile('../goldens/...')` paths resolve against the test
+  // file's own directory. Overriding basedir here breaks that convention.
+  final original = goldenFileComparator as LocalFileComparator;
   goldenFileComparator = _ToleratedFileComparator(
-    Uri.parse('${Directory.current.uri}test/'),
-    _kMaxGoldenDiffRatio,
+    Uri.parse('${original.basedir}flutter_test_config.dart'),
   );
   await testMain();
 }
 
 class _ToleratedFileComparator extends LocalFileComparator {
-  _ToleratedFileComparator(super.testBase, this._tolerance);
-
-  final double _tolerance;
+  _ToleratedFileComparator(super.testFile);
 
   @override
   Future<bool> compare(Uint8List imageBytes, Uri golden) async {
@@ -37,19 +36,19 @@ class _ToleratedFileComparator extends LocalFileComparator {
       await getGoldenBytes(golden),
     );
     if (result.passed) return true;
-
-    if (result.diffPercent <= _tolerance) {
-      // Within tolerance — log for visibility, still pass.
-      // ignore: avoid_print
-      print(
-        '[golden] ${p.basename(golden.toString())} diff '
+    if (result.diffPercent <= _kMaxGoldenDiffRatio) {
+      debugPrint(
+        '[golden] $golden within tolerance: '
         '${(result.diffPercent * 100).toStringAsFixed(3)}% '
-        '≤ ${(_tolerance * 100).toStringAsFixed(2)}% — accepted.',
+        '(limit ${(_kMaxGoldenDiffRatio * 100).toStringAsFixed(2)}%)',
       );
       return true;
     }
-
-    final error = await generateFailureOutput(result, golden, basedir);
-    throw FlutterError(error);
+    throw FlutterError(
+      'Golden "$golden": '
+      '${(result.diffPercent * 100).toStringAsFixed(2)}% pixel diff '
+      'exceeds tolerated '
+      '${(_kMaxGoldenDiffRatio * 100).toStringAsFixed(2)}%.',
+    );
   }
 }

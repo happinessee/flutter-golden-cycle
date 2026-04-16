@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-04-16
+
+### Fixed
+- `flutter_test_config.dart.tmpl`: goldens silently wrote to the wrong directory (`<project>/../goldens/` instead of `<uiPackage>/test/goldens/`) because the custom `_ToleratedFileComparator` set `basedir` to a value that conflicted with the `matchesGoldenFile('../goldens/...')` convention. Now delegates to Flutter's own `LocalFileComparator.basedir` (Panda-proven pattern), so relative golden paths resolve as expected. Removed the unnecessary `autoUpdateGoldenFiles` short-circuit — Flutter's framework calls `update()` directly in `--update-goldens` mode, so overriding `compare` never needed to gate on that flag.
+- Dropped the stray `package:path` dependency and `dart:io` import in `flutter_test_config.dart.tmpl` — no longer used after the rewrite.
+
+### Added
+- CI now runs a true goldens round-trip on `examples/minimal-flutter`: bootstraps baselines via `--update-goldens`, asserts the PNGs land at `test/goldens/<widget>/<variant>.png`, then re-runs without the flag to exercise the compare path. Would have caught the 0.1.0 comparator bug on first push.
+
 ## [0.1.0] - 2026-04-16
 
 ### Added
