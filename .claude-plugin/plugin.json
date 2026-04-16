@@ -52,7 +52,7 @@
     "goldenTolerance": {
       "type": "number",
       "description": "Cross-OS pixel diff tolerance (0.0 = strict, 0.02 = 2% permissive for Skia AA drift).",
-      "default": 0.01
+      "default": 0.02
     },
     "fontChoice": {
       "type": "select",

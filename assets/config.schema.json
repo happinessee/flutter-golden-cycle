@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/happinessee/flutter-golden-cycle/config.schema.json",
+  "title": "flutter-golden-cycle project config",
+  "description": "Schema for .claude/flutter-golden-cycle.config.json. Reference this file via $schema in your config for IDE completion.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["uiPackage"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "uiPackage": {
+      "type": "string",
+      "description": "Path to the UI/design-system package where goldens live. Use '.' for single-package Flutter projects.",
+      "examples": ["packages/ui", "."]
+    },
+    "defaultRunApp": {
+      "type": "string",
+      "description": "Path to the app flutter-run uses in Phase 4b for app-layer changes.",
+      "default": "."
+    },
+    "defaultRunDevice": {
+      "type": "string",
+      "description": "flutter run -d target. 'chrome' pairs with deterministic per-worktree web ports.",
+      "enum": ["chrome", "macos", "linux", "windows", "ios", "android"],
+      "default": "chrome"
+    },
+    "goldenViewport": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "width": { "type": "number", "minimum": 100 },
+        "height": { "type": "number", "minimum": 100 }
+      },
+      "default": { "width": 1440, "height": 900 }
+    },
+    "goldenTolerance": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 0.1,
+      "description": "Cross-OS pixel-diff tolerance. 0.02 (2%) absorbs typical Skia AA drift.",
+      "default": 0.02
+    },
+    "theme": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fontChoice": {
+          "type": "string",
+          "enum": ["bundled", "custom", "system"],
+          "default": "system"
+        },
+        "fontFamily": {
+          "type": "string",
+          "description": "Required when fontChoice is 'bundled' or 'custom'."
+        },
+        "fontAssetPackage": {
+          "type": "string",
+          "description": "Flutter package that owns the font files (for asset-qualified lookup)."
+        },
+        "fontFiles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path"],
+            "properties": {
+              "path": { "type": "string" },
+              "weight": { "type": "integer" },
+              "style": { "type": "string", "enum": ["normal", "italic"] }
+            }
+          }
+        }
+      }
+    },
+    "commitScopes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Allowed Conventional Commit scopes for this repo.",
+      "default": ["ui", "app"]
+    },
+    "issueSource": {
+      "type": "string",
+      "enum": ["manual"],
+      "description": "v0.1 only supports 'manual'. v0.2 will add 'linear' and 'github'.",
+      "default": "manual"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+# --- flutter-golden-cycle (added by /flutter-golden-cycle-init) ---
+# Per-worktree runtime artifacts that should never be committed:
+.figma-refs/
+.flutter-run.pid
+.flutter-run.log
+.web-port
+.issue-context.json
+# --- end flutter-golden-cycle ---
