@@ -23,7 +23,7 @@ try {
     $sha.Dispose()
 }
 
-# Take first 4 bytes → unsigned int → mod Buckets (matches POSIX's "first 8 hex chars" = first 4 bytes).
+# Take first 4 bytes -> unsigned int -> mod Buckets (matches POSIX's "first 8 hex chars" = first 4 bytes).
 $n = [BitConverter]::ToUInt32($hashBytes, 0)
 $bucket = [int]($n % [uint32]$Buckets)
 $port   = $PortFloor + $bucket
