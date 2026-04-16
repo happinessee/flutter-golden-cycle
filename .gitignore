@@ -6,4 +6,7 @@ node_modules/
 
 # Plugin dev artifacts
 .claude/
+# …but the example fixture config under examples/**/.claude/ is content, not dev state:
+!examples/**/.claude/
+!examples/**/.claude/**
 *.bak.*

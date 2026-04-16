@@ -1,5 +1,5 @@
 <#
-worktree-port.ps1 — Windows-native port allocator (mirrors worktree-port.sh).
+worktree-port.ps1 - Windows-native port allocator (mirrors worktree-port.sh).
 
 Usage: pwsh scripts/worktree-port.ps1 <worktree-name>
 Output: integer in [PortFloor, PortFloor + Buckets - 1]
@@ -11,7 +11,7 @@ param(
     [string]$Name
 )
 
-# TODO(user): keep these in sync with worktree-port.sh — cross-platform determinism depends on it.
+# TODO(user): keep these in sync with worktree-port.sh - cross-platform determinism depends on it.
 $PortFloor = 8080
 $Buckets   = 100
 

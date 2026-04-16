@@ -71,7 +71,6 @@ jobs:
             -e 's|{{ioImport}}||g' \
             -e 's|{{fontFamilyConst}}|const String? _kFontFamily = null;|g' \
             -e 's|{{fontLoaderBlock}}|  // system font — no loader|g' \
-            -e 's|{{themeFontFamilyLine}}||g' \
             assets/golden_host.dart.tmpl > examples/minimal-flutter/test/helpers/golden_host.dart
           sed -e 's/{{goldenTolerance}}/0.02/g' \
             assets/flutter_test_config.dart.tmpl > examples/minimal-flutter/test/flutter_test_config.dart

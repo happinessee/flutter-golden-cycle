@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../assets/config.schema.json",
+  "uiPackage": ".",
+  "defaultRunApp": ".",
+  "defaultRunDevice": "chrome",
+  "goldenViewport": { "width": 1440, "height": 900 },
+  "goldenTolerance": 0.02,
+  "theme": { "fontChoice": "system" },
+  "commitScopes": ["ui", "app"],
+  "issueSource": "manual"
+}

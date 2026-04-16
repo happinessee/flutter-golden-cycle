@@ -67,9 +67,8 @@ For each target, render the template from `${CLAUDE_PLUGIN_ROOT}/assets/*.tmpl` 
 | `{{viewportHeight}}` | int | `config.goldenViewport.height` |
 | `{{goldenTolerance}}` | float | `config.goldenTolerance` |
 | `{{ioImport}}` | Dart line | Empty if `fontChoice == "system"`; `"\nimport 'dart:io';\n"` otherwise (File is only used when loading fonts from disk) |
-| `{{fontFamilyConst}}` | Dart line | `"const String _kFontFamily = '<name>';"` if `fontChoice != "system"`, else `"const String? _kFontFamily = null;"` |
+| `{{fontFamilyConst}}` | Dart line | `"const String _kFontFamily = '<name>';"` if `fontChoice != "system"`, else `"const String? _kFontFamily = null;"` — `_kFontFamily` is always referenced by `ThemeData.fontFamily` regardless of mode. |
 | `{{fontLoaderBlock}}` | Dart block | `"  // system font — no loader"` if `fontChoice == "system"`; otherwise a `FontLoader(...)` + `addFont(...)` block composed from `config.theme.fontFiles` |
-| `{{themeFontFamilyLine}}` | Dart line (may start with `\n`) | `"\n      fontFamily: _kFontFamily,"` if `fontChoice != "system"`, else `""` |
 
 Honor the idempotency flag from arguments.
 
