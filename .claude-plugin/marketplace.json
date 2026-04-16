@@ -1,0 +1,16 @@
+{
+  "$schema": "https://code.claude.com/schemas/marketplace.json",
+  "name": "flutter-golden-cycle-marketplace",
+  "owner": {
+    "name": "happinessee",
+    "email": "gygur1206@gmail.com",
+    "url": "https://github.com/happinessee"
+  },
+  "plugins": [
+    {
+      "name": "flutter-golden-cycle",
+      "source": "./",
+      "description": "Flutter dev cycle with golden-test TDD, deterministic worktree ports, and Figma-driven visual review."
+    }
+  ]
+}

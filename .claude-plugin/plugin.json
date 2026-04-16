@@ -1,0 +1,75 @@
+{
+  "$schema": "https://code.claude.com/schemas/plugin.json",
+  "name": "flutter-golden-cycle",
+  "version": "0.1.0",
+  "description": "Flutter dev cycle with golden-test TDD, per-worktree deterministic ports, component-reuse discipline, and Figma-driven visual review.",
+  "author": {
+    "name": "happinessee",
+    "email": "gygur1206@gmail.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/happinessee/flutter-golden-cycle",
+  "repository": "https://github.com/happinessee/flutter-golden-cycle",
+  "keywords": [
+    "flutter",
+    "dart",
+    "golden-tests",
+    "tdd",
+    "figma",
+    "worktree",
+    "design-system",
+    "visual-regression"
+  ],
+  "skills": ["skills/flutter-golden-cycle"],
+  "commands": ["commands/"],
+  "userConfig": {
+    "uiPackage": {
+      "type": "string",
+      "description": "Path to your UI/design-system package (where goldens live). Single-package Flutter projects can use '.'.",
+      "default": "packages/ui",
+      "required": true
+    },
+    "defaultRunApp": {
+      "type": "string",
+      "description": "Path to the app run by Phase 4b when reviewing non-ui changes. '.' for single-package projects.",
+      "default": "."
+    },
+    "defaultRunDevice": {
+      "type": "string",
+      "description": "flutter run device flag (e.g. 'macos', 'chrome', 'linux'). Use 'chrome' to leverage deterministic web ports.",
+      "default": "chrome"
+    },
+    "goldenViewportWidth": {
+      "type": "number",
+      "description": "Golden render viewport width in logical pixels.",
+      "default": 1440
+    },
+    "goldenViewportHeight": {
+      "type": "number",
+      "description": "Golden render viewport height in logical pixels.",
+      "default": 900
+    },
+    "goldenTolerance": {
+      "type": "number",
+      "description": "Cross-OS pixel diff tolerance (0.0 = strict, 0.02 = 2% permissive for Skia AA drift).",
+      "default": 0.01
+    },
+    "fontChoice": {
+      "type": "select",
+      "description": "How the golden host should load fonts.",
+      "options": ["bundled", "custom", "system"],
+      "default": "system"
+    },
+    "fontFamily": {
+      "type": "string",
+      "description": "Font family name (required when fontChoice is 'custom' or 'bundled').",
+      "default": ""
+    },
+    "issueSource": {
+      "type": "select",
+      "description": "Where to pull issue context from. v0.1 only supports 'manual' (user pastes issue details).",
+      "options": ["manual"],
+      "default": "manual"
+    }
+  }
+}
