@@ -24,6 +24,18 @@ UI quality gates (goldens, visual review, reuse discovery) are not optional poli
 
 Run `/flutter-golden-cycle-init` once per project to generate `.claude/flutter-golden-cycle.config.json` and install golden-test helpers. Then start the workflow below.
 
+## Phase 0 — Load Configuration (implicit, runs before Phase 1)
+
+Before any workflow phase executes, bind `config.*` from (in priority order):
+
+1. `.claude/flutter-golden-cycle.config.json` in the project root.
+2. Plugin-level `${user_config.*}` values set at install time.
+3. Built-in defaults (see `assets/config.schema.json`).
+
+If `.claude/flutter-golden-cycle.config.json` is missing entirely, halt and suggest `/flutter-golden-cycle-init`.
+
+All subsequent `${config.uiPackage}`, `${config.defaultRunApp}`, etc. references below are resolved against these bound values — **not** against Claude Code template-expansion.
+
 ## Workflow
 
 ```dot

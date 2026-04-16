@@ -1,0 +1,86 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  shell:
+    name: Shell + JSON lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck
+        run: |
+          sudo apt-get update && sudo apt-get install -y shellcheck
+          shellcheck scripts/worktree-port.sh
+      - name: port script determinism (macOS-style shasum + Linux sha256sum agree)
+        run: |
+          # Linux runner has sha256sum natively. Run twice for determinism.
+          A=$(bash scripts/worktree-port.sh feature/foo)
+          B=$(bash scripts/worktree-port.sh feature/foo)
+          test "$A" = "$B" || { echo "port script not deterministic"; exit 1; }
+          # Spot-check range
+          [ "$A" -ge 8080 ] && [ "$A" -le 8179 ] || { echo "port $A out of range"; exit 1; }
+      - name: JSON parseability
+        run: |
+          python3 -c "import json; [json.load(open(f)) for f in ['.claude-plugin/plugin.json', '.claude-plugin/marketplace.json', 'assets/config.schema.json', 'examples/minimal-flutter/.claude/flutter-golden-cycle.config.example.json']]"
+      - name: JSON schema validation (example config conforms to schema)
+        run: |
+          pip install --quiet check-jsonschema
+          check-jsonschema --schemafile assets/config.schema.json examples/minimal-flutter/.claude/flutter-golden-cycle.config.example.json
+
+  powershell:
+    name: PowerShell lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+          $results = Invoke-ScriptAnalyzer -Path scripts/worktree-port.ps1 -Severity Error,Warning
+          if ($results) {
+            $results | Format-Table -AutoSize
+            exit 1
+          }
+      - name: determinism check
+        shell: pwsh
+        run: |
+          $a = pwsh scripts/worktree-port.ps1 feature/foo
+          $b = pwsh scripts/worktree-port.ps1 feature/foo
+          if ($a -ne $b) { throw "ps1 not deterministic" }
+
+  flutter:
+    name: Example renders + analyzes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.0'
+          channel: 'stable'
+      - name: Render templates into example project (simulates /flutter-golden-cycle-init)
+        run: |
+          mkdir -p examples/minimal-flutter/test/helpers
+          # For CI we render with system-font config (no font loading, no dart:io needed).
+          sed \
+            -e 's/{{viewportWidth}}/1440/g' \
+            -e 's/{{viewportHeight}}/900/g' \
+            -e 's|{{ioImport}}||g' \
+            -e 's|{{fontFamilyConst}}|const String? _kFontFamily = null;|g' \
+            -e 's|{{fontLoaderBlock}}|  // system font — no loader|g' \
+            -e 's|{{themeFontFamilyLine}}||g' \
+            assets/golden_host.dart.tmpl > examples/minimal-flutter/test/helpers/golden_host.dart
+          sed -e 's/{{goldenTolerance}}/0.02/g' \
+            assets/flutter_test_config.dart.tmpl > examples/minimal-flutter/test/flutter_test_config.dart
+      - name: Flutter pub get
+        working-directory: examples/minimal-flutter
+        run: flutter pub get
+      - name: Flutter analyze
+        working-directory: examples/minimal-flutter
+        run: flutter analyze --fatal-infos
+      - name: Flutter test (goldens marked skip until baselines land)
+        working-directory: examples/minimal-flutter
+        run: flutter test

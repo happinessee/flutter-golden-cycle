@@ -52,12 +52,24 @@ Create `.claude/` and `.claude/flutter-golden-cycle.config.json`. Include `"$sch
 
 ### 3. Install templates
 
-For each target, render the template from `${CLAUDE_PLUGIN_ROOT}/assets/*.tmpl`, substituting `{{placeholders}}` with resolved config values, then write to:
+For each target, render the template from `${CLAUDE_PLUGIN_ROOT}/assets/*.tmpl` using **flat `{{var}}` string substitution only** — no template engine. Any conditional Dart code is pre-composed here and passed in as a single variable.
 
 | Source (`assets/`) | Destination |
 |---|---|
 | `golden_host.dart.tmpl` | `<uiPackage>/test/helpers/golden_host.dart` |
 | `flutter_test_config.dart.tmpl` | `<uiPackage>/test/flutter_test_config.dart` |
+
+**Variables to prepare before substitution:**
+
+| Variable | Type | Source |
+|---|---|---|
+| `{{viewportWidth}}` | int | `config.goldenViewport.width` |
+| `{{viewportHeight}}` | int | `config.goldenViewport.height` |
+| `{{goldenTolerance}}` | float | `config.goldenTolerance` |
+| `{{ioImport}}` | Dart line | Empty if `fontChoice == "system"`; `"\nimport 'dart:io';\n"` otherwise (File is only used when loading fonts from disk) |
+| `{{fontFamilyConst}}` | Dart line | `"const String _kFontFamily = '<name>';"` if `fontChoice != "system"`, else `"const String? _kFontFamily = null;"` |
+| `{{fontLoaderBlock}}` | Dart block | `"  // system font — no loader"` if `fontChoice == "system"`; otherwise a `FontLoader(...)` + `addFont(...)` block composed from `config.theme.fontFiles` |
+| `{{themeFontFamilyLine}}` | Dart line (may start with `\n`) | `"\n      fontFamily: _kFontFamily,"` if `fontChoice != "system"`, else `""` |
 
 Honor the idempotency flag from arguments.
 
